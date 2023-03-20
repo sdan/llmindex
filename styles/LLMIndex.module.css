@@ -1,0 +1,39 @@
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(var(--foreground-rgb), 0.1);
+}
+
+.table th {
+  font-weight: bold;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(var(--foreground-rgb), 0.025);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: rgba(var(--foreground-rgb), 0.0125);
+}
+
+.table tbody tr:nth-child(even):hover {
+  background-color: rgba(var(--foreground-rgb), 0.0375);
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}

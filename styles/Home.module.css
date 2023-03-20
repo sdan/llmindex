@@ -39,13 +39,12 @@
   font-family: var(--font-mono);
 }
 
-/* Remove the grid-template-columns property */
 .grid {
   display: grid;
+  grid-template-columns: repeat(4, minmax(25%, auto));
   width: var(--max-width);
   max-width: 100%;
 }
-
 
 .card {
   padding: 1rem 1.2rem;
