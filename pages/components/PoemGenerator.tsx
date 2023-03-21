@@ -6,69 +6,25 @@ const PoemGenerator = () => {
   const handleGeneratePoem = async () => {
     setGeneratedText('');
 
-    const response = await fetch('/api/stream', {
-      method: 'POST',
-      body: JSON.stringify({
-        models: [
-          {
-            name: 'openai:text-davinci-003',
-            parameters: {
-              temperature: 0.5,
-              maximumLength: 200,
-              topP: 1.0,
-              presencePenalty: 0.0,
-              frequencyPenalty: 0.0,
-              stopSequences: [],
-            },
-            provider: 'openai',
-            tag: 'openai:text-davinci-003',
-          },
-        ],
-        prompt: 'Continue the poem: Mary had a little lamb. Its fleece was white as snow.',
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const source = new EventSource('/api/stream');
+    console.log("new source",source)
 
-    if (!response.body) {
-      console.error('Failed to read response body');
-      return;
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-
-    while (true) {
-      console.log("poem still alive")
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
+    source.onmessage = (event) => {
+      console.log('received event:', event);
+  
+      if (event.data) {
+        setGeneratedText((prevText) => prevText + event.data);
       }
-
-      const chunk = decoder.decode(value, { stream: true });
-      console.log("poem chunk",chunk)
-      const matches = chunk.match(/event:(\S+)\sdata:(.+?)\s/);
-      console.log("poem chunk end")
-
-      if (matches) {
-        console.log("poem match)")
-        const data = JSON.parse(matches[2]);
-        data.event = matches[1];
-        console.log("poem vnt",data.event);
-
-        if (data.event === 'status') {
-          setGeneratedText((prevText) => prevText + data.message);
-        }
-      } else {
-        console.log("poem doesnt match")
-      }
-    }
+    };
+  
+    source.onerror = (error) => {
+      console.error('EventSource error:', error);
+      source.close();
+    };
   };
 
   return (
     <div>
-      <h1>Poem Generator</h1>
       <button onClick={handleGeneratePoem}>Generate Poem</button>
       {generatedText && (
         <div>
