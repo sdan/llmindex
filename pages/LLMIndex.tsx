@@ -7,6 +7,9 @@ import StreamComponent from './components/PoemGenerator';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import PoemGenerator from './components/PoemGenerator';
 
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
+
 const LLMIndex: React.FC = () => {
     
   const [generatedText, setGeneratedText] = React.useState("");
@@ -20,19 +23,19 @@ const LLMIndex: React.FC = () => {
 
     let payload = {'models': [{'name': 'openai:text-davinci-003', 'parameters': {'temperature': 0.5, 'maximumLength': 200, 'topP': 1.0, 'presencePenalty': 0.0, 'frequencyPenalty': 0.0, 'stopSequences': []}, 'provider': 'openai', 'tag': 'openai:text-davinci-003'}], 'prompt': 'Continue the poem: Mary had a little lamb. Its fleece was white as snow.'}
 
-    // const res = await fetch('/api/stream', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify(payload),
-    //   });
-    //   if (res.ok) {
-    //     const data = await res.json();
-    //     console.log("res data", data);
-    //     setGeneratedText(data);
-    //   }    
+    const res = await fetch('/api/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("res data", data);
+        setGeneratedText(data);
+      }    
 
   };
 
@@ -153,10 +156,11 @@ const LLMIndex: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-        <button onClick={handleClick}>Generate Text</button>
+        {/* <button onClick={handleClick}>Generate Text</button>
         <p>Text: {generatedText}</p>
-<PoemGenerator />
+<PoemGenerator /> */}
           {natModels.map((model, index) => (
+            
             <tr key={index}>
               <td>{index + 1}</td>
               <td>
