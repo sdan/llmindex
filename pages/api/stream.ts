@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-// import fetch from 'node-fetch';
+export const config = {
+  runtime: "edge",
+};
 
 export default async function stream(
   req: NextApiRequest,
