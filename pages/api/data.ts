@@ -3,7 +3,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 
-function randomNumberBetween(min, max, prevValue, stdDev = 0.2) {
+function randomNumberBetween(min: number,
+	max: number,
+	prevValue: number,
+	stdDev = 0.2) {
 	let randomNumber;
   
 	do {

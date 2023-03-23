@@ -1,11 +1,21 @@
 import Head from "next/head";
-import LLMIndex from "./LLMIndex";
+// import LLMIndex from "./LLMIndex";
 import React, { useState, useEffect } from "react";
 import { Container, Table, Badge } from "react-bootstrap";
 import useSWR from "swr";
 
+interface Model {
+  provider: string;
+  name: string;
+  version: string;
+  parameters: Record<string, unknown>;
+  tag: string;
+  latency: number;
+  contextWindow: number;
+}
+
 export default function Home() {
-  const [modelsArray, setModelsArray] = useState([]);
+  const [modelsArray, setModelsArray] = useState<Model[]>([]);
   const [previousRandomNumbers, setPreviousRandomNumbers] = useState({});
   const [sortColumn, setSortColumn] = useState("index");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -47,8 +57,8 @@ export default function Home() {
       const newModelsArray = Object.entries(natModels).map(([key, value]) => {
         return {
           tag: key,
-          ...value,
-        };
+          ...(value as object),
+        } as Model;
       });
       console.log("newModelsArray", newModelsArray);
       setModelsArray(newModelsArray);
