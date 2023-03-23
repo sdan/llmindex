@@ -7,6 +7,8 @@ import useSWR from "swr";
 export default function Home() {
   const [modelsArray, setModelsArray] = useState([]);
   const [previousRandomNumbers, setPreviousRandomNumbers] = useState({});
+  const [sortColumn, setSortColumn] = useState("index");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const fetcher = async (url: string) => {
     console.log("fetching");
@@ -53,6 +55,29 @@ export default function Home() {
     }
   }, [natModels]);
 
+  const handleSort = (column) => {
+    console.log("column", column);
+    if (column === sortColumn) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedModels = [...modelsArray].sort((a, b) => {
+    const columnA = a[sortColumn];
+    const columnB = b[sortColumn];
+
+    if (columnA < columnB) {
+      return sortOrder === "asc" ? -1 : 1;
+    }
+    if (columnA > columnB) {
+      return sortOrder === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
   return (
     <>
       <Head>
@@ -73,7 +98,7 @@ export default function Home() {
               <th>Provider</th>
               <th>Model Name</th>
               <th>Code Name</th>
-              <th>Speed (chars/sec)</th>
+              <th onClick={() => handleSort("latency")}>Speed (chars/sec)</th>
               <th>Status</th>
               <th>Context Window</th>
             </tr>
@@ -90,13 +115,44 @@ export default function Home() {
                 </td>
                 <td>{model.tag}</td>
                 <td>{model.latency}</td>
-                <span class="badge badge-pill badge-success">Success</span>                <td>{model.contextWindow}</td>
-                {/* <span className="green-dot"></span> */}
+                <td className="status-cell align-middle">
+                  <span className="status-symbol"></span>
+                </td>
+                <td>{model.contextWindow}</td>
               </tr>
             ))}
           </tbody>
         </Table>
       </Container>
+
+      <style jsx>{`
+        .status-cell {
+          text-align: center;
+          background-color: transparent;
+        }
+        
+        .status-symbol {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: green;
+          animation: breathing 3s ease-in-out infinite;
+        }
+        
+
+        @keyframes breathing {
+          0% {
+            box-shadow: 0 0 0 0 rgba(50, 205, 50, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 0 10px rgba(50, 205, 50, 0);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(50, 205, 50, 0.4);
+          }
+        }
+      `}</style>
     </>
   );
 }
