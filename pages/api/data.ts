@@ -3,16 +3,48 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // return hello world
-	console.log("handling handler")
-    res.status(200).json(data);
-}
+function randomNumberBetween(min, max, prevValue, stdDev = 0.2) {
+	let randomNumber;
+  
+	do {
+	  randomNumber = Math.floor(Math.random() * (max - min + 1) + min);
+	} while (
+	  prevValue !== undefined &&
+	  Math.abs(randomNumber - prevValue) <= stdDev
+	);
+  
+	return randomNumber;
+  }
+  
+  export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	console.log("handling handler");
+  
+	const previousRandomNumbers = {};
+  
+	const newData = Object.entries(data).reduce((acc, [key, value]) => {
+	  const randomSeed = value.parameters.randomSeed;
+	  const prevValue = previousRandomNumbers[key];
+	  const latency = randomNumberBetween(randomSeed[0], randomSeed[1], prevValue, 1);
+  
+	  previousRandomNumbers[key] = latency;
+  
+	  return {
+		...acc,
+		[key]: {
+		  ...value,
+		  latency,
+		},
+	  };
+	}, {});
+  
+	res.status(200).json(newData);
+  }
 
 const data = {
 	"forefront:EleutherAI/GPT-J": {
 		"provider": "forefront",
 		"version": "vanilla",
+		"contextWindow": 2048,
 		"name": "gpt-j-6b-vanilla",
 		"parameters": {
 			"randomSeed": [10,29],
@@ -74,6 +106,7 @@ const data = {
 	"forefront:EleutherAI/GPT-NeoX": {
 		"provider": "forefront",
 		"version": "vanilla",
+		"contextWindow": 2048,
 		"name": "gpt-neox-20b-vanilla",
 		"parameters": {
 			"randomSeed": [16,46],
@@ -135,6 +168,7 @@ const data = {
 	"forefront:pythia-12b": {
 		"provider": "forefront",
 		"version": "vanilla",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [50,60],
 			"temperature": {
@@ -197,6 +231,7 @@ const data = {
 		"provider": "forefront",
 		"version": "vanilla",
 		"name": "pythia-20b",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [44,51],
 			"temperature": {
@@ -257,6 +292,7 @@ const data = {
 	"forefront:pythia-6.9b": {
 		"provider": "forefront",
 		"version": "vanilla",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [31,41],
 			"temperature": {
@@ -317,6 +353,7 @@ const data = {
 	},
 	"anthropic:claude-instant-v1.0": {
 		"provider": "anthropic",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [224,447],
 			"temperature": {
@@ -370,6 +407,7 @@ const data = {
 	},
 	"anthropic:claude-v1.2": {
 		"provider": "anthropic",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [161,233],
 			"temperature": {
@@ -423,6 +461,7 @@ const data = {
 	},
 	"textgeneration:alpaca-7b": {
 		"provider": "textgeneration",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [29,31],
 			"temperature": {
@@ -483,6 +522,7 @@ const data = {
 	},
 	"textgeneration:llama-65b": {
 		"provider": "textgeneration",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [18,62],
 			"temperature": {
@@ -543,6 +583,7 @@ const data = {
 	},
 	"huggingface:bigscience/bloomz": {
 		"provider": "huggingface",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [98,100],
 			"temperature": {
@@ -604,6 +645,7 @@ const data = {
 	"huggingface:google/flan-t5-xxl": {
 		"provider": "huggingface",
 		"name": "google/flan-t5-xxl",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [46,85],
 			"temperature": {
@@ -663,6 +705,7 @@ const data = {
 	},
 	"huggingface:google/flan-ul2": {
 		"provider": "huggingface",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [34,74],
 			"temperature": {
@@ -724,6 +767,7 @@ const data = {
 	"cohere:command-medium-nightly": {
 		"provider": "cohere",
 		"name": "command-medium-nightly",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [263,466],
 			"temperature": {
@@ -777,6 +821,7 @@ const data = {
 	"cohere:command-xlarge-nightly": {
 		"provider": "cohere",
 		"name": "command-xlarge-nightly",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed":[125,164],
 			"temperature": {
@@ -830,6 +875,7 @@ const data = {
 	"cohere:medium": {
 		"provider": "cohere",
 		"name": "medium",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [210,826],
 			"temperature": {
@@ -883,6 +929,7 @@ const data = {
 	"cohere:xlarge": {
 		"provider": "cohere",
 		"name": "xlarge",
+		"contextWindow": 2048,
 		"parameters": {
 			"randomSeed": [132,209],
 			"temperature": {
@@ -935,6 +982,7 @@ const data = {
 	},
 	"openai:gpt-4": {
 		"provider": "openai",
+		"contextWindow": 32384,
 		"name": " gpt-4",
 		"parameters": {
 			"randomSeed": [45,50],
@@ -981,6 +1029,7 @@ const data = {
 	},
 	"openai:code-cushman-001": {
 		"provider": "openai",
+		"contextWindow": 8001,
 		"parameters": {
 			"randomSeed": [200,368],
 			"temperature": {
@@ -1027,6 +1076,7 @@ const data = {
 	},
 	"openai:code-davinci-002": {
 		"provider": "openai",
+		"contextWindow": 4097,
 		"parameters": {
 			"randomSeed": [200,568],
 			"temperature": {
@@ -1073,6 +1123,7 @@ const data = {
 	},
 	"openai:gpt-3.5-turbo": {
 		"provider": "openai",
+		"contextWindow": 4096,
 		"parameters": {
 			"randomSeed": [158,268],
 			"temperature": {
@@ -1127,6 +1178,7 @@ const data = {
 	"openai:text-ada-001": {
 		"provider": "openai",
 		"providers": "openai",
+		"contextWindow": 2049,
 		"name": "text-ada-001",
 		"parameters": {
 			"randomSeed": [200,468],
@@ -1174,6 +1226,7 @@ const data = {
 	"openai:text-babbage-001": {
 		"provider": "openai",
 		"name": "text-babbage-001",
+		"contextWindow": 2049,
 		"parameters": {
 			"randomSeed": [300,568],
 			"temperature": {
@@ -1220,6 +1273,7 @@ const data = {
 	"openai:text-curie-001": {
 		"provider": "openai",
 		"name": "text-curie-001",
+		"contextWindow": 2049,
 		"parameters": {
 			"randomSeed": [300,568],
 			"temperature": {
@@ -1266,6 +1320,7 @@ const data = {
 	"openai:text-davinci-002": {
 		"provider": "openai",
 		"name": "text-davinci-002",
+		"contextWindow": 4097,
 		"parameters": {
 			"randomSeed": [58,208],
 			"temperature": {
@@ -1312,6 +1367,7 @@ const data = {
 	"openai:text-davinci-003": {
 		"provider": "openai",
 		"name": "text-davinci-003",
+		"contextWindow": 4097,
 		"parameters": {
 			"randomSeed": [400,568],
 			"temperature": {
